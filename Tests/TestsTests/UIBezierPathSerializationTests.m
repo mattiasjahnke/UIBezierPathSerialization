@@ -109,4 +109,35 @@
     XCTAssertTrue(bezierPath.flatness == 0.6f, @"The flatness should equal 0.6!");
 }
 
+CGPathElement CGPathElementFromJSONObject(NSDictionary *jsonObject);
+- (void)testDeserializingComplexBezierPathElementTypesFromFile
+{
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"complex_path" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error = nil;
+    NSDictionary *pathData = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    XCTAssertNil(error, @"Error should be nil");
+    
+    for (NSDictionary *jsonObject in pathData[@"elements"]) {
+        CGPathElement element = CGPathElementFromJSONObject(jsonObject);
+        switch (element.type) {
+            case kCGPathElementMoveToPoint:
+                XCTAssertTrue([jsonObject[@"type"] isEqualToString:@"MoveTo"], @"Element of type MoveTo converted correctly");
+                break;
+            case kCGPathElementAddLineToPoint:
+                XCTAssertTrue([jsonObject[@"type"] isEqualToString:@"LineTo"], @"Element of type LineTo converted correctly");
+                break;
+            case kCGPathElementAddQuadCurveToPoint:
+                XCTAssertTrue([jsonObject[@"type"] isEqualToString:@"QuadraticCurveTo"], @"Element of type QuadraticCurveTo converted correctly");
+                break;
+            case kCGPathElementAddCurveToPoint:
+                XCTAssertTrue([jsonObject[@"type"] isEqualToString:@"CubicCurveTo"], @"Element of type CubicCurveTo converted correctly");
+                break;
+            case kCGPathElementCloseSubpath:
+                XCTAssertTrue([jsonObject[@"type"] isEqualToString:@"ClosePath"], @"Element of type ClosePath converted correctly");
+                break;
+        }
+    }
+}
+
 @end

@@ -184,7 +184,7 @@ static CGPathElement CGPathElementClosePathFromJSONObject(NSDictionary *jsonObje
     return closePathElement;
 }
 
-static CGPathElement CGPathElementFromJSONObject(NSDictionary *jsonObject)
+CGPathElement CGPathElementFromJSONObject(NSDictionary *jsonObject)
 {
     NSCParameterAssert(jsonObject[@"type"]);
     
